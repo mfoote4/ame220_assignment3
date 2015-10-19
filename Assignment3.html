@@ -1,0 +1,160 @@
+
+<html>
+
+<body>
+  
+    <a href='javascript:buttonClicked(iosDiv)' class='button' id='button0'>
+        iOS
+    </a>
+    <a href='javascript:buttonClicked(androidDiv)' class='button' id='button1'>
+        Android
+    </a>
+
+    <div id="iosDiv" onchange="changed()" style="display: block">
+        <select id="iOS">
+            <option value='512'>iTunesArtwork</option>
+            <option value='1024'>iTunesArtwork@2</option>
+            <option value='120'>Icon-60@2x.png</option>
+            <option value='180'>Icon-60@3x.png</option>
+            <option value='76'>Icon-76.png</option>
+            <option value='152'>Icon-76@2x.png</option>
+            <option value='40'>Icon-Small-40.png</option>
+            <option value='80'>Icon-Small-40@2x.png</option>
+            <option value='120'>Icon-Small-40@3x.png</option>
+            <option value='29'>Icon-Small.png</option>
+            <option value='58'>Icon-Small@2x.png</option>
+            <option value='87'>Icon-Small@3x.png</option>
+            <option value='57'>Icon.png</option>
+            <option value='114'>Icon@2x.png</option>
+            <option value='72'>Icon-72.png</option>
+            <option value='144'>Icon-72@2x.png</option>
+            <option value='50'>Icon-Small-50.png</option>
+            <option value='100'>Icon-Small-502@x.png</option>
+        </select>
+    </div>
+
+    <div id="androidDiv" onchange="changed()" style="display: none">
+        <select id="Android">
+            <option value='50'>mdpi.png</option>
+            <option value='72'>hdpi.png</option>
+            <option value='96'>xhdpi.png</option>
+            <option value='144'>xxhdpi.png</option>
+            <option value='192'>xxxhdpi.png</option>
+            <option value='512'>Google-Play-store.png</option>
+        </select>
+    </div>
+    <input type="file" name="uploadImage" id="uploadImage" onchange="imageUploaded()">
+
+    <img id="imagePreview">
+</body>
+
+<head>
+    <title>
+        Image Resizer
+    </title>
+    <style>
+        #imagePreview {
+            height: 300px;
+            width: 300px;
+            display: block;
+        }
+
+        .button{
+	        height:30px;
+	        width:100px;
+	        display: block;
+	        border: solid 1px black;
+            background-color: black;
+            color: white;
+	        text-align: center;
+	        text-decoration: none;
+	        margin-bottom: 5;
+	        line-height: 25px;
+	}
+
+    </style>
+
+    <script src="jquery-1.11.3.js" type="text/javascript"></script>
+    <script>
+        var select = document.getElementById("iOS");
+
+        function changed()
+            {
+                if ($('#iosDiv').css('display') == 'block') {
+                    select = document.getElementById("iOS");
+                    alert(select.selectedIndex);
+                }
+                else if ($('#androidDiv').css('display') == 'block') {
+                    select = document.getElementById("Android");
+                    alert(select.selectedIndex);
+                }
+        }
+
+
+        var buttonClicked = function(n){
+            if(n == androidDiv)
+            {
+                $("#iosDiv").hide();
+                $("#androidDiv").show();
+                n = "iosDiv";
+            }
+            else
+            {
+                $("#androidDiv").hide();
+                $("#iosDiv").show();
+                n = "androidDiv";
+            }
+        }
+
+function imageUploaded()
+{
+    var file = $('#uploadImage').get(0);
+
+   if(file.files[0].type.split("/")[0].toLowerCase() != "image"){
+        alert("Incorrect file type -- Please ensure you are uploading an image file.");
+   }
+   if ( file.files && file.files[0] && file.files[0].type.split("/")[0].toLowerCase() === "image") {
+        var FR= new FileReader();
+        FR.onload = function(e) {
+            var data = e.target.result;
+            var canvas = document.createElement("canvas");
+            var img = document.createElement("img");
+            img.onload= function(){
+                var MAX_WIDTH = document.getElementsByTagName("option")[select.selectedIndex].value;
+                alert(select);
+                var MAX_HEIGHT = document.getElementsByTagName("option")[select.selectedIndex].value;
+                 var width = img.width;
+                 var height = img.height;
+                 var w2 = width;
+                 var h2 = height;
+
+                 if (width > height) {
+                     if (width > MAX_WIDTH) {
+                        h2 = height * MAX_WIDTH / width;
+                        w2 = MAX_WIDTH;
+                    }
+                 } else {
+                     if (height > MAX_HEIGHT) {
+                        w2 = width * MAX_HEIGHT / height;
+                        h2 = MAX_HEIGHT;
+                    }
+                }
+                canvas.width = w2;
+                canvas.height = h2;
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, w2, h2);
+                var base64St = canvas.toDataURL("image/png");
+                document.getElementById("imagePreview").src = base64St;
+                document.getElementById("imagePreview").style.height = MAX_HEIGHT;
+                document.getElementById("imagePreview").style.width = MAX_WIDTH;
+            }
+            img.src = data;
+        };
+        FR.readAsDataURL( file.files[0] );
+   }
+}
+    </script>
+
+</head>
+
+</html>
